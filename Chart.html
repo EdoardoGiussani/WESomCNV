@@ -1,0 +1,62 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script type="text/javascript">
+google.charts.load("current", {packages:["timeline"]});
+google.charts.setOnLoadCallback(initialize);
+
+function initialize() {
+  var opts = {sendMethod: 'auto'};
+
+  var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1yBOygW1R7CWazePYEOn1OTV8WHKQQWTko-xB8N74lRk/gviz/tq?sheet=OnlineChart&range=AI2:AL100');
+
+  query.send(handleQueryResponse);
+}
+
+function handleQueryResponse(response) {  
+  if (response.isError()) {
+    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+    return;
+  }
+  var data = response.getDataTable();
+  data.insertColumn(1, 'string', data.getColumnLabel(1));
+  for (var i = 0; i < data.getNumberOfRows(0); i++){
+    var val = data.getValue(i,2);
+		data.setValue(i,1, val.toString());
+  }
+  data.removeColumn(2);
+  console.log(data);
+  drawChart(data)
+}
+
+function drawChart(sheetData) {
+
+  var container = document.getElementById('SegmentsChart');
+  var chart = new google.visualization.Timeline(container);
+
+  var options = {
+    width: 1000,
+    height: 800,
+    avoidOverlappingGridLines: false,
+    timeline: { 
+      forceIFrame: true,
+      colorByRowLabel: true,
+      rowLabelStyle: {
+        color: '000000',
+        fontName: 'Arial',
+        fontSize: 16
+      },
+      barLabelStyle: {
+        fontName: 'Arial Black',
+        fontSize: 13
+      }
+    },
+    colors: ['FF0000', 'FFFF00', '00A000', '00FFFF', '0000FF', '0000FF', '0000FF', '0000FF']
+  };
+
+  chart.draw(sheetData, options);
+}
+</script>
+
+<div id="SegmentsChart" style="height: 800px;"></div>
+
+
